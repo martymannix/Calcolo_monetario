@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calcolo Monetario</title>
+  <style>
+    body {
+      background-color: #cfffdd;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .title {
+      font-size: 40px;
+      font-weight: bold;
+      color: #ff4081;
+      margin-top: 50px;
+      margin-bottom: 40px;
+      text-transform: uppercase;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .menu {
+      margin-top: 50px;
+    }
+
+    .menu-button {
+      font-size: 24px;
+      padding: 10px 20px;
+      border: none;
+      background-color: #ff4081;
+      color: white;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .menu-button:hover {
+      background-color: #f50057;
+    }
+
+    .calculation-container {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .question {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #ff4081;
+    }
+
+    .calculation {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #ff4081;
+      font-weight: bold;
+    }
+
+    .currency-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      padding: 10px;
+      border: 2px dashed #004d40;
+      border-radius: 10px;
+    }
+
+    .drop-area {
+      width: 100%;
+      text-align: center;
+      font-size: 20px;
+      color: #004d40;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+
+    .currency-item {
+      width: 90px;
+      height: 90px;
+      margin: 10px;
+      border: 2px solid #004d40;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .currency-item:hover {
+      background-color: #e04f63;
+    }
+
+    .total-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .total {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .result {
+      font-size: 20px;
+      margin-top: 10px;
+      color: #f44336;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .action-button {
+      font-size: 18px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .check {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .cross {
+      background-color: #f44336;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="menu">
+      <div class="title">Attività: Calcolo Monetario</div>
+      <button class="menu-button" onclick="showCalculationLevel()">CALCOLI</button>
+    </div>
+
+    <div id="calculation" class="calculation-container" style="display: none;">
+      <div class="calculation"></div>
+      <div class="currency-container"></div>
+      <div class="total-container">
+        <div class="drop-area" ondrop="drop(event)" ondragover="allowDrop(event)">
+          <div class="drop-text">Trascina qui le monete per ottenere la somma corretta</div>
+        </div>
+        <div class="total">Totale: 0.00 CHF</div>
+        <div class="result"></div>
+      </div>
+      <div class="action-buttons">
+        <button class="action-button" onclick="checkResult()">Controlla</button>
+        <button class="action-button" onclick="resetCalculation()">Azzera</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentTotal = 0;
+    let targetAmount = 0;
+
+    function showCalculationLevel() {
+      document.querySelector('.menu').style.display = "none";
+      document.getElementById('calculation').style.display = "block";
+      resetCalculation();
+      generateCalculation();
+      generateCurrencies();
+    }
+
+    function resetCalculation() {
+      currentTotal = 0;
+      document.querySelector('.total').textContent = `Totale: 0.00 CHF`;
+      document.querySelector('.result').textContent = '';
+    }
+
+    function generateCalculation() {
+      const levels = [
+        { max: 99.99, count: 5 },
+        { max: 999.99, count: 5 },
+        { max: 9999.99, count: 5 }
+      ];
+
+      const selectedLevel = levels[Math.floor(Math.random() * levels.length)];
+
+      const levelAmounts = Array.from({ length: selectedLevel.count }, () => getRandomAmount(selectedLevel.max));
+      const totalAmount = levelAmounts.reduce((acc, amount) => acc + parseFloat(amount), 0).toFixed(2);
+
+      targetAmount = totalAmount;
+      document.querySelector('.calculation').textContent = `Esegui il calcolo corretto: ${levelAmounts.join(' + ')} CHF = ${targetAmount} CHF`;
+    }
+
+    function generateCurrencies() {
+      const currencyContainer = document.querySelector('.currency-container');
+      currencyContainer.innerHTML = '';
+
+      const currencies = [
+        { value: 0.05, label: "0.05 CHF" },
+        { value: 0.1, label: "0.10 CHF" },
+        { value: 0.2, label: "0.20 CHF" },
+        { value: 0.5, label: "0.50 CHF" },
+        { value: 1, label: "1 CHF" },
+        { value: 2, label: "2 CHF" },
+        { value: 5, label: "5 CHF" },
+        { value: 10, label: "10 CHF" },
+        { value: 20, label: "20 CHF" },
+        { value: 50, label: "50 CHF" },
+        { value: 100, label: "100 CHF" },
+        { value: 500, label: "500 CHF" },
+        { value: 1000, label: "1000 CHF" },
+        { value: 5000, label: "5000 CHF" },
+        { value: 10000, label: "10000 CHF" },
+      ];
+
+      currencies.forEach(currency => {
+        const currencyItem = document.createElement('div');
+        currencyItem.classList.add('currency-item');
+        currencyItem.textContent = currency.label;
+        currencyItem.dataset.value = currency.value;
+        currencyItem.draggable = true;
+        currencyItem.ondragstart = (event) => {
+          drag(event);
+        };
+        currencyContainer.appendChild(currencyItem);
+      });
+    }
+
+    function drag(event) {
+      event.dataTransfer.setData("text", event.target.dataset.value);
+    }
+
+    function allowDrop(event) {
+      event.preventDefault();
+    }
+
+    function drop(event) {
+      event.preventDefault();
+      const data = event.dataTransfer.getData("text");
+      const value = parseFloat(data);
+      currentTotal += value;
+      document.querySelector('.total').textContent = `Totale: ${currentTotal.toFixed(2)} CHF`;
+    }
+
+    function checkResult() {
+      const resultCheck = document.querySelector('.result');
+
+      if (currentTotal === parseFloat(targetAmount)) {
+        resultCheck.innerHTML = `<span class='check'>&#10004; Risultato corretto. Passa al prossimo calcolo!</span>`;
+      } else {
+        resultCheck.innerHTML = `<span class='cross'>&#10008; Risultato errato. Riprova!</span>`;
+      }
+    }
+
+    function getRandomAmount(max) {
+      const min = 1.50;
+      max = max || 9999.99;
+      return (Math.random() * (max - min) + min).toFixed(2);
+    }
+  </script>
+</body>
+
+</html>
